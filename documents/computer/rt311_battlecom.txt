@@ -1,0 +1,166 @@
+ =========================================================
+[              BATTLECOM-Host über RT311/RT314            ]
+[=========================================================]
+[  Author        : KvAK|uninvited                         ]
+[  Datum         : 05.04.2002                             ]
+[  WWW           : http://www.uninvited.de                ]
+[  Kontakt       : uninvited@gmx.net                      ]
+[_________________________________________________________]
+
+[Hintergrund]
+-------------
+Battlecom ist ein klassisches Sprachübertragunsprogramm und wird hauptsächlich von Internetspielern benutzt um sich mit Teamkollegen abzusprechen.
+Shadowfactor (die Firma die Battlecom programmierte) wurde von Microsoft aufgekauft und die Technik weiterverwendet für das MS-Produkt GAME VOICE.
+Battlecom hat den Vorteil, das es Freeware ist und damit gegenüber Roger Wilco und GAMEVOICE absolut Werbungs -und/oder Kostenfrei ist.
+Dadurch, das Shadowfactor so nicht mehr existiert wird es vermutlich auch keine offiziellen Erweiterungen oder neue Versionen geben. Aber warum auch
+für ein Tool das einwandfrei unter WIN32/Linux funktioniert und ein Client-Tool sowie ein Dedicated Server zur Verfügung steht ?
+
+
+[Problem]
+---------
+Der Benutzer eines RT311/314 kann keine BATTLECOM-Sessions hosten. Verbindung ist möglich, jedoch wird keine Sprache übertragen.
+
+
+[Lösung]
+--------
+Die Lösung erlaubt es zwar ein Host für Battlecom zu sein, jedoch ist hinter einem RT311/314 keine Peer-to-Peer-Session möglich (zumindest konnte ich
+keine Möglichkeit entdecken diese einzurichten. Offizielle Supportanfragen per Mail oder Web an Netgear waren erfolglos).
+Durch einen kleinen Workaround ist es möglich trotzdem hinter einem RT311/314 zu hosten.
+
+Zuerst müssen die für Battlecom benötigten Ports herausgefunden werden:
+2300-2400     Protokoll: TCP/UDP
+28800-28900   Protokoll: TCP/UDP
+47624         Protokoll: UDP
+
+Dann geht es zur Konfiguration.
+
+
+
+---------------------------------------
+1.Schritt - Konfiguration am RT311/314:
+---------------------------------------
+
+Dafür ruft man zuerst über die
+Eingabeaufforderung über TELNET das Konfigurations-Tool des RT311 auf:
+
+        telnet <IP-Adresse> (z.B.: 192.168.0.1)
+
+Sobald die Verbindung aufgebaut ist muss das Passwort des Routers eingegeben werden.
+Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es erscheint folgende Oberfläche:
+
+----------------------------------------------------------------------------------|
+                              RT311 Main Menu                                     |
+                                                                                  |
+     Getting Started                      Advanced Management                     |
+       1. General Setup                     21. Filter Set Configuration          |
+       2. WAN Setup                                                               |
+       3. LAN Setup                         23. System Password                   |
+       4. Internet Access Setup             24. System Maintenance                |
+                                                                                  |
+     Advanced Applications                                                        |
+       11. Remote Node Setup                                                      |
+       12. Static Routing Setup                                                   |
+       15. SUA Server Setup                                                       |
+                                                                                  |
+                                            99. Exit                              |
+                                                                                  |
+                                                                                  |
+                          Enter Menu Selection Number:                            |
+                                                                                  |
+----------------------------------------------------------------------------------|
+
+Hier wählt man Auswahl "15" und bestätigt mit "ENTER". Es erscheint:
+
+----------------------------------------------------------------------------------|
+                           Menu 15 - SUA Server Setup                             |
+                                                                                  |
+                                                                                  |
+               Rule   Start Port No.   End Port No.   IP Address                  |
+              ---------------------------------------------------                 |
+                 1.    Default          Default        192.168.0.44               |
+                 2.      2300             2400         192.168.0.44               |
+                 3.      28800            28900        192.168.0.44               |
+                 4.      47624            47624        192.168.0.44               |
+                 5.      0                0            0.0.0.0                    |
+                 6.      0                0            0.0.0.0                    |
+                 7.      0                0            0.0.0.0                    |
+                 8.      0                0            0.0.0.0                    |
+                 9.      0                0            0.0.0.0                    |
+                10.      0                0            0.0.0.0                    |
+                11.      0                0            0.0.0.0                    |
+                12.      1026             1026         RR Reserved                |
+                                                                                  |
+                    Press ENTER to Confirm or ESC to Cancel:                      |
+                                                                                  |
+----------------------------------------------------------------------------------|
+
+Hier werden die PORT FORWARDINGS eingerichtet. Das heisst: der RT311/314 empfängt Datenpakete aus dem WAN und "verteilt" diese für bestimmte
+Ports an die Rechner im LAN. Im obigen Beispiel werden standardmässig alle Pakete an die IP 192.168.0.44 weitergeleitet.
+Dazu kommen die Port Ranges die für den BattlecomServer notwendig sind. Hier muessen nun die entsprechenden Ports eingetragen werden und dahinter
+jeweils die IP-Adresse an die diese weitergeleitet werden sollen - also die LAN-Adresse des Battlecom Servers.
+Dies ist die Beispielkonfiguration, wie sie in meinem Netzwerk eingerichtet ist. Natürlich koennen eure IP-Adressen anders sein, die Ports
+muesst ihr jedoch genau so uebernehmen. Nachdem ihr diese Eintragungen gemacht habt drueckt ihr so lange <ENTER> bis auf dem Screen
+"SAVING TO ROM. Please wait..." erscheint.
+Dann sind die Einstellungen gesichert und ihr startet den RT311/314 am besten neu (-> Stromstecker abziehen und wieder anstecken.
+
+(H I N W E I S: Das eintragen von sog. "Ranges" also "Portbereichen, ist am RT311/315 nur mit Firmware 3.25 möglich. Davor können nur
+einzelen Ports freigeschaltet werden. Informationen zur Firmware siehe "Anhang")
+
+
+---------------------------------------------
+2.Schritt - Battlecom (SERVER) konfigurieren:
+---------------------------------------------
+
+Battlecom Server und Battlecom Client muessen zuerst installiert werden. Danach startet man den Battlecom Server. Sobald man HOST SESSION
+drueckt bekommt man einen Assistenten zur Installation. Oben links wird das jeweilige Fenster genannt ( englische Version - WIN98 - Version 1.1
+Build 96
+
+1/9 - Informationen
+    - WEITER klicken
+
+2/9 - SERVER NAME: hier gebt ihr den Namen des Servers ein z.B.: TEST
+    - Auswahl PUBLIC oder PRIVATE Server (PRIVATE WÄHLEN)
+    - WEITER klicken
+
+3/9 - SESSION TYPE (Wichtig: hier CLIENT/SERVER wählen.)
+    - WEITER KLICKEN
+
+4/9 - PROTOCOL: hier TCP/IP wählen
+    - WEITER klicken
+
+5/9 - COMPRESSION TYPE: hier habe ich für TDSL "ECHO" gewählt (Standard "DELTA"). (Server erzwingt COMPRESSION auch bei Clients! Vorsicht!)
+    - PLAYER LIMIT: hier wird die max. Anzahl der Spieler eingestellt, die gleichzeitig darauf zugreifen koennen.(TESTEN!!!)
+
+6/9 - CHANNELS: hier koennt ihr eure Kanäle erstellen, die Spieler später anwählen koennen.
+    - WEITER klicken
+
+7/9 - MICROPHONE KLICKS: hier kann angewählt werden ob KLICK-Geraeusche am Anfang und Ende der Sprachuebertragung erlaubt sind.
+    - WEITER klicken
+
+8/9 - SERVER PASSWORT: hier kann dem Server ein PW verpasst werden. Nur diejenigen, die das PW wissen kommen dann auch drauf. Sehr sinnvoll.
+    - REMOTE ADMINISTRATION: hier kann ein PW verpasst werden mit dem man von anderen Rechnern aus den Server administrieren kann.
+    - WEITER klicken
+
+9/9 - FERTIG ! Hier erscheint eine Zusammenfassung der Einstellungen. Ausserdem kann man die Einstellungen unten als DEFAULT setzen.
+    - WEITER klicken.
+
+Der Server wird nun gestartet. Der wohl wichtigste Punkt ist 3/9 - die Auswahl des Session Typs. Hier muss unbedingt CLIENT/SERVER gewählt werden.
+Ansonsten funktioniert Battlecom nicht hinter dem RT311/314.
+
+--------------------------------------
+3.Schritt - Battlecom (CLIENT)benutzen
+--------------------------------------
+
+Waehrend man lokal (also der HOST)einfach mit dem Battlecom Client auf die LAN-IP-Adresse des Server verbindet (im Beispiel oben waere es die
+192.168.0.44) brauchen die anderen Teilnehmer die WAN-IP-Adresse. Diese ist zum Beispiel bei TDSL immer dynamisch,
+d.h. sie wird aus einem Pool heraus meist neu vergeben.
+Zum Herausfinden dieser IP-Adresse gibt es mehrere Möglichkeiten. Ich benutze dazu den Browser und oeffne folgende Seite:
+
+                        http://checkip.dyndns.org
+
+Dort wird der Hostname und die IP angezeigt. Diese IP benutzen die Teilnehmer und geben diese im Battlecom Client als Server-IP-Adresse an.
+So sollte es nun funktionieren. Bei mir zumindest war das erfolgreich.
+
+[LINKS]
+-------
+
