@@ -1,42 +1,42 @@
  =========================================================
-[ Konfiguration des RT311-Routers für DYNDNS.ORG-Accounts ]
+[ Konfiguration des RT311-Routers fÃ¼r DYNDNS.ORG-Accounts ]
 [=========================================================]
-[  Author        : KvAK|uninvited                         ]
+[  Author        : gmzabos                                ]
 [  Datum         : 07.09.2001                             ]
 [  WWW           : http://www.uninvited.de                ]
-[  Kontakt       : uninvited@gmx.net                      ]
+[  Kontakt       : gmzgames.de@googlemail.com             ]
 [_________________________________________________________]
 
 
-Um den eigenen Rechner als Server über das Internet zur Verfügung zu stellen, gibt es im RT311 (fest integriert - bei mir Firmwareversion: 3.24)
-eine Konfigurationsoberfläche, welche dazu dient einen Account von DYNDNS.ORG in den Router einzutragen und damit bei jeder Anwahl über den Router,
+Um den eigenen Rechner als Server Ã¼ber das Internet zur VerfÃ¼gung zu stellen, gibt es im RT311 (fest integriert - bei mir Firmwareversion: 3.24)
+eine KonfigurationsoberflÃ¤che, welche dazu dient einen Account von DYNDNS.ORG in den Router einzutragen und damit bei jeder Anwahl Ã¼ber den Router,
 die IP-Adresse (dynamisch) mit dem Host-Namen (statisch) abzugleichen. Dadurch bekommt der Rechner auch nach Wechsel der IP-Adresse immer wieder
-den gleichen HOST-Namen zugewiesen. Durch diese Variante ist es nicht nötig eine der vielen Software-Clients zu nutzen / zu installieren.
+den gleichen HOST-Namen zugewiesen. Durch diese Variante ist es nicht nÃ¶tig eine der vielen Software-Clients zu nutzen / zu installieren.
 
 
 [Vorraussetzungen]
 ------------------
 
-1.) Ein gültiger, nicht geblockter Account bei http://www.dyndns.org (Erstellung siehe FAQ!)
-2.) Ein gültiger, bereits erstellter Hostname (z.B.: test.dyndns.org - Erstellung sieh FAQ!)
+1.) Ein gÃ¼ltiger, nicht geblockter Account bei http://www.dyndns.org (Erstellung siehe FAQ!)
+2.) Ein gÃ¼ltiger, bereits erstellter Hostname (z.B.: test.dyndns.org - Erstellung sieh FAQ!)
 3.) RT311-Router mit Verbindung zum Internet (z.b.: TDSL bei T-Online)
 4.) TELNET
-5.) Daten für den Zugriff auf den Router (User / Password => Default: admin / 1234)
+5.) Daten fÃ¼r den Zugriff auf den Router (User / Password => Default: admin / 1234)
 
 
 
 [Konfiguration]
 ---------------
 
-Nachdem man sich die Daten des DYNDNS-ACCOUNTS notiert hat, kann man mit der Konfiguration des Routers beginnen. Dafür ruft man zuerst über die
-Eingabeaufforderung über TELNET das Konfigurations-Tool des RT311 auf:
+Nachdem man sich die Daten des DYNDNS-ACCOUNTS notiert hat, kann man mit der Konfiguration des Routers beginnen. DafÃ¼r ruft man zuerst Ã¼ber die
+Eingabeaufforderung Ã¼ber TELNET das Konfigurations-Tool des RT311 auf:
 
         telnet <IP-Adresse> (z.B.: 192.168.0.1)
 
 Sobald die Verbindung aufgebaut ist muss das Passwort des Routers eingegeben werden.
-Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es erscheint folgende Oberfläche:
+Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es erscheint folgende OberflÃ¤che:
 
-                     --- HAUPTMENÜ ---
+                     --- HAUPTMENÃœ ---
 
 ------------------------------------------------------------------------------------|
                                                                                     |
@@ -64,7 +64,7 @@ Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es
 ------------------------------------------------------------------------------------|
 
 
-Hier wählt man die " 1 " aus (Eingabe erfolgt bei "Enter Menu Selection Number:"). <ENTER>. Es erscheint:
+Hier wÃ¤hlt man die " 1 " aus (Eingabe erfolgt bei "Enter Menu Selection Number:"). <ENTER>. Es erscheint:
 
 
                      --- 1. General Setup ---
@@ -113,29 +113,29 @@ Press Space Bar to Toggle.                                                      
 ------------------------------------------------------------------------------------|
 
 
-Hier müssen folgende Optionen festgelegt werden:
+Hier mÃ¼ssen folgende Optionen festgelegt werden:
 
-     SERVICE PROVIDER= WWW.DynDNS.ORG      -> derzeit keine andere Auswahl möglich!
+     SERVICE PROVIDER= WWW.DynDNS.ORG      -> derzeit keine andere Auswahl mÃ¶glich!
      ACTIVE= YES                           -> YES=DynDNS aktiv / NO= DynDNS nicht aktiv
      HOST= test.dyndns.org                 -> hier muss der bereits unter http://www.dyndns.org eingerichtete Host eingegeben werden (hier: test)
-     EMAIL=                                -> hier muss eine gültige E-Mail-Adresse zur Kontaktaufnahme eingetragen werden
+     EMAIL=                                -> hier muss eine gÃ¼ltige E-Mail-Adresse zur Kontaktaufnahme eingetragen werden
      USER= test                            -> hier muss der User, mit welchem ihr euch bei http://www.dyndns.org anmeldet eingetragen werden
-     PASSWORD=                             -> das dazugehörige Passwort für den in USER aufgeführten Benutzernamen
-     ENABLE WILDCARD=                      -> YES: *.test.dyndns.org - Suche möglich / NO: *.test.dyndns.org nicht möglich !
+     PASSWORD=                             -> das dazugehÃ¶rige Passwort fÃ¼r den in USER aufgefÃ¼hrten Benutzernamen
+     ENABLE WILDCARD=                      -> YES: *.test.dyndns.org - Suche mÃ¶glich / NO: *.test.dyndns.org nicht mÃ¶glich !
 
 WICHTIG:
-Der HOST (hier: TEST) und der USER (hier: test) müssen nicht unbedingt übereinstimmten. Laut Informationen von http://www.dyndns.org
-ist es für 1 USER möglich 5 (!) HOSTS anzulegen. Deshalb können auch verschiedene Einstellungen eingetragen werden.
+Der HOST (hier: TEST) und der USER (hier: test) mÃ¼ssen nicht unbedingt Ã¼bereinstimmten. Laut Informationen von http://www.dyndns.org
+ist es fÃ¼r 1 USER mÃ¶glich 5 (!) HOSTS anzulegen. Deshalb kÃ¶nnen auch verschiedene Einstellungen eingetragen werden.
 
 Nachdem die Daten richtig eingetragen worden sind kann durch <ENTER> die eben vorgenommene Einstellung gesichert werden. (Bei erfolgreicher Sicherung
 der Daten erscheint im TELNET-Fenster - unten links - die Meldung: "SAVED TO ROM. Please wait...". Sollte die Meldung nicht erscheinen, dann
-wurden die vorgenommen Einstellungen nicht gesichert und stehen damit auch nicht zur Verfügung. Hier muss die ganze Prozedur in Menu 1.1 nochmals
-durchgeführt werden. Falls dies nach einige Versuchen nicht in Ordnung ist und die Daten nicht gesichert werden, ist damit zu rechnen, das die
+wurden die vorgenommen Einstellungen nicht gesichert und stehen damit auch nicht zur VerfÃ¼gung. Hier muss die ganze Prozedur in Menu 1.1 nochmals
+durchgefÃ¼hrt werden. Falls dies nach einige Versuchen nicht in Ordnung ist und die Daten nicht gesichert werden, ist damit zu rechnen, das die
 Hardware einen Fehler hat. Hier verweise ich auf den Support von NETGEAR (http://www.netgear.de/support/index.html).
 
 [ERGEBNIS]
 ----------
-Sind die Einstellungen richtig gemacht worden, dann aktualisiert der RT311-Router automatisch die IP-Adresse auf den gewählten HOST-Namen.
+Sind die Einstellungen richtig gemacht worden, dann aktualisiert der RT311-Router automatisch die IP-Adresse auf den gewÃ¤hlten HOST-Namen.
 
 
 
