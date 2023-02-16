@@ -1,33 +1,33 @@
  =========================================================
-[              BATTLECOM-Host über RT311/RT314            ]
+[              BATTLECOM-Host Ã¼ber RT311/RT314            ]
 [=========================================================]
-[  Author        : KvAK|uninvited                         ]
+[  Author        : gmzabos                                ]
 [  Datum         : 05.04.2002                             ]
 [  WWW           : http://www.uninvited.de                ]
-[  Kontakt       : uninvited@gmx.net                      ]
+[  Kontakt       : gmzgames.de@googlemail.com             ]
 [_________________________________________________________]
 
 [Hintergrund]
 -------------
-Battlecom ist ein klassisches Sprachübertragunsprogramm und wird hauptsächlich von Internetspielern benutzt um sich mit Teamkollegen abzusprechen.
-Shadowfactor (die Firma die Battlecom programmierte) wurde von Microsoft aufgekauft und die Technik weiterverwendet für das MS-Produkt GAME VOICE.
-Battlecom hat den Vorteil, das es Freeware ist und damit gegenüber Roger Wilco und GAMEVOICE absolut Werbungs -und/oder Kostenfrei ist.
+Battlecom ist ein klassisches SprachÃ¼bertragunsprogramm und wird hauptsÃ¤chlich von Internetspielern benutzt um sich mit Teamkollegen abzusprechen.
+Shadowfactor (die Firma die Battlecom programmierte) wurde von Microsoft aufgekauft und die Technik weiterverwendet fÃ¼r das MS-Produkt GAME VOICE.
+Battlecom hat den Vorteil, das es Freeware ist und damit gegenÃ¼ber Roger Wilco und GAMEVOICE absolut Werbungs -und/oder Kostenfrei ist.
 Dadurch, das Shadowfactor so nicht mehr existiert wird es vermutlich auch keine offiziellen Erweiterungen oder neue Versionen geben. Aber warum auch
-für ein Tool das einwandfrei unter WIN32/Linux funktioniert und ein Client-Tool sowie ein Dedicated Server zur Verfügung steht ?
+fÃ¼r ein Tool das einwandfrei unter WIN32/Linux funktioniert und ein Client-Tool sowie ein Dedicated Server zur VerfÃ¼gung steht ?
 
 
 [Problem]
 ---------
-Der Benutzer eines RT311/314 kann keine BATTLECOM-Sessions hosten. Verbindung ist möglich, jedoch wird keine Sprache übertragen.
+Der Benutzer eines RT311/314 kann keine BATTLECOM-Sessions hosten. Verbindung ist mÃ¶glich, jedoch wird keine Sprache Ã¼bertragen.
 
 
-[Lösung]
+[LÃ¶sung]
 --------
-Die Lösung erlaubt es zwar ein Host für Battlecom zu sein, jedoch ist hinter einem RT311/314 keine Peer-to-Peer-Session möglich (zumindest konnte ich
-keine Möglichkeit entdecken diese einzurichten. Offizielle Supportanfragen per Mail oder Web an Netgear waren erfolglos).
-Durch einen kleinen Workaround ist es möglich trotzdem hinter einem RT311/314 zu hosten.
+Die LÃ¶sung erlaubt es zwar ein Host fÃ¼r Battlecom zu sein, jedoch ist hinter einem RT311/314 keine Peer-to-Peer-Session mÃ¶glich (zumindest konnte ich
+keine MÃ¶glichkeit entdecken diese einzurichten. Offizielle Supportanfragen per Mail oder Web an Netgear waren erfolglos).
+Durch einen kleinen Workaround ist es mÃ¶glich trotzdem hinter einem RT311/314 zu hosten.
 
-Zuerst müssen die für Battlecom benötigten Ports herausgefunden werden:
+Zuerst mÃ¼ssen die fÃ¼r Battlecom benÃ¶tigten Ports herausgefunden werden:
 2300-2400     Protokoll: TCP/UDP
 28800-28900   Protokoll: TCP/UDP
 47624         Protokoll: UDP
@@ -40,13 +40,13 @@ Dann geht es zur Konfiguration.
 1.Schritt - Konfiguration am RT311/314:
 ---------------------------------------
 
-Dafür ruft man zuerst über die
-Eingabeaufforderung über TELNET das Konfigurations-Tool des RT311 auf:
+DafÃ¼r ruft man zuerst Ã¼ber die
+Eingabeaufforderung Ã¼ber TELNET das Konfigurations-Tool des RT311 auf:
 
         telnet <IP-Adresse> (z.B.: 192.168.0.1)
 
 Sobald die Verbindung aufgebaut ist muss das Passwort des Routers eingegeben werden.
-Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es erscheint folgende Oberfläche:
+Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es erscheint folgende OberflÃ¤che:
 
 ----------------------------------------------------------------------------------|
                               RT311 Main Menu                                     |
@@ -69,7 +69,7 @@ Nachdem das RICHTIGE Passwort eingegeben wurde sollte die Anmeldung gelingen, es
                                                                                   |
 ----------------------------------------------------------------------------------|
 
-Hier wählt man Auswahl "15" und bestätigt mit "ENTER". Es erscheint:
+Hier wÃ¤hlt man Auswahl "15" und bestÃ¤tigt mit "ENTER". Es erscheint:
 
 ----------------------------------------------------------------------------------|
                            Menu 15 - SUA Server Setup                             |
@@ -94,16 +94,16 @@ Hier wählt man Auswahl "15" und bestätigt mit "ENTER". Es erscheint:
                                                                                   |
 ----------------------------------------------------------------------------------|
 
-Hier werden die PORT FORWARDINGS eingerichtet. Das heisst: der RT311/314 empfängt Datenpakete aus dem WAN und "verteilt" diese für bestimmte
-Ports an die Rechner im LAN. Im obigen Beispiel werden standardmässig alle Pakete an die IP 192.168.0.44 weitergeleitet.
-Dazu kommen die Port Ranges die für den BattlecomServer notwendig sind. Hier muessen nun die entsprechenden Ports eingetragen werden und dahinter
+Hier werden die PORT FORWARDINGS eingerichtet. Das heisst: der RT311/314 empfÃ¤ngt Datenpakete aus dem WAN und "verteilt" diese fÃ¼r bestimmte
+Ports an die Rechner im LAN. Im obigen Beispiel werden standardmÃ¤ssig alle Pakete an die IP 192.168.0.44 weitergeleitet.
+Dazu kommen die Port Ranges die fÃ¼r den BattlecomServer notwendig sind. Hier muessen nun die entsprechenden Ports eingetragen werden und dahinter
 jeweils die IP-Adresse an die diese weitergeleitet werden sollen - also die LAN-Adresse des Battlecom Servers.
-Dies ist die Beispielkonfiguration, wie sie in meinem Netzwerk eingerichtet ist. Natürlich koennen eure IP-Adressen anders sein, die Ports
+Dies ist die Beispielkonfiguration, wie sie in meinem Netzwerk eingerichtet ist. NatÃ¼rlich koennen eure IP-Adressen anders sein, die Ports
 muesst ihr jedoch genau so uebernehmen. Nachdem ihr diese Eintragungen gemacht habt drueckt ihr so lange <ENTER> bis auf dem Screen
 "SAVING TO ROM. Please wait..." erscheint.
 Dann sind die Einstellungen gesichert und ihr startet den RT311/314 am besten neu (-> Stromstecker abziehen und wieder anstecken.
 
-(H I N W E I S: Das eintragen von sog. "Ranges" also "Portbereichen, ist am RT311/315 nur mit Firmware 3.25 möglich. Davor können nur
+(H I N W E I S: Das eintragen von sog. "Ranges" also "Portbereichen, ist am RT311/315 nur mit Firmware 3.25 mÃ¶glich. Davor kÃ¶nnen nur
 einzelen Ports freigeschaltet werden. Informationen zur Firmware siehe "Anhang")
 
 
@@ -119,22 +119,22 @@ Build 96
     - WEITER klicken
 
 2/9 - SERVER NAME: hier gebt ihr den Namen des Servers ein z.B.: TEST
-    - Auswahl PUBLIC oder PRIVATE Server (PRIVATE WÄHLEN)
+    - Auswahl PUBLIC oder PRIVATE Server (PRIVATE WÃ„HLEN)
     - WEITER klicken
 
-3/9 - SESSION TYPE (Wichtig: hier CLIENT/SERVER wählen.)
+3/9 - SESSION TYPE (Wichtig: hier CLIENT/SERVER wÃ¤hlen.)
     - WEITER KLICKEN
 
-4/9 - PROTOCOL: hier TCP/IP wählen
+4/9 - PROTOCOL: hier TCP/IP wÃ¤hlen
     - WEITER klicken
 
-5/9 - COMPRESSION TYPE: hier habe ich für TDSL "ECHO" gewählt (Standard "DELTA"). (Server erzwingt COMPRESSION auch bei Clients! Vorsicht!)
+5/9 - COMPRESSION TYPE: hier habe ich fÃ¼r TDSL "ECHO" gewÃ¤hlt (Standard "DELTA"). (Server erzwingt COMPRESSION auch bei Clients! Vorsicht!)
     - PLAYER LIMIT: hier wird die max. Anzahl der Spieler eingestellt, die gleichzeitig darauf zugreifen koennen.(TESTEN!!!)
 
-6/9 - CHANNELS: hier koennt ihr eure Kanäle erstellen, die Spieler später anwählen koennen.
+6/9 - CHANNELS: hier koennt ihr eure KanÃ¤le erstellen, die Spieler spÃ¤ter anwÃ¤hlen koennen.
     - WEITER klicken
 
-7/9 - MICROPHONE KLICKS: hier kann angewählt werden ob KLICK-Geraeusche am Anfang und Ende der Sprachuebertragung erlaubt sind.
+7/9 - MICROPHONE KLICKS: hier kann angewÃ¤hlt werden ob KLICK-Geraeusche am Anfang und Ende der Sprachuebertragung erlaubt sind.
     - WEITER klicken
 
 8/9 - SERVER PASSWORT: hier kann dem Server ein PW verpasst werden. Nur diejenigen, die das PW wissen kommen dann auch drauf. Sehr sinnvoll.
@@ -144,7 +144,7 @@ Build 96
 9/9 - FERTIG ! Hier erscheint eine Zusammenfassung der Einstellungen. Ausserdem kann man die Einstellungen unten als DEFAULT setzen.
     - WEITER klicken.
 
-Der Server wird nun gestartet. Der wohl wichtigste Punkt ist 3/9 - die Auswahl des Session Typs. Hier muss unbedingt CLIENT/SERVER gewählt werden.
+Der Server wird nun gestartet. Der wohl wichtigste Punkt ist 3/9 - die Auswahl des Session Typs. Hier muss unbedingt CLIENT/SERVER gewÃ¤hlt werden.
 Ansonsten funktioniert Battlecom nicht hinter dem RT311/314.
 
 --------------------------------------
@@ -154,7 +154,7 @@ Ansonsten funktioniert Battlecom nicht hinter dem RT311/314.
 Waehrend man lokal (also der HOST)einfach mit dem Battlecom Client auf die LAN-IP-Adresse des Server verbindet (im Beispiel oben waere es die
 192.168.0.44) brauchen die anderen Teilnehmer die WAN-IP-Adresse. Diese ist zum Beispiel bei TDSL immer dynamisch,
 d.h. sie wird aus einem Pool heraus meist neu vergeben.
-Zum Herausfinden dieser IP-Adresse gibt es mehrere Möglichkeiten. Ich benutze dazu den Browser und oeffne folgende Seite:
+Zum Herausfinden dieser IP-Adresse gibt es mehrere MÃ¶glichkeiten. Ich benutze dazu den Browser und oeffne folgende Seite:
 
                         http://checkip.dyndns.org
 
