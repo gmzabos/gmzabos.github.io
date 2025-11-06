@@ -218,8 +218,10 @@
                     <label>Format</label>
                     <select id="format">
                         <option value="square">Square (800×800)</option>
-                        <option value="a5">DIN A5 (595×842)</option>
-                        <option value="a4">DIN A4 (842×1191)</option>
+                        <option value="a5p">DIN A5 portrait (595×842)</option>
+                        <option value="a5l">DIN A5 landscape (842x595)</option>
+                        <option value="a4p">DIN A4 portrait (842×1191)</option>
+                        <option value="a4l">DIN A4 landscape (1191x842)</option>
                     </select>
                 </div>
 
@@ -855,13 +857,21 @@
                 case 'square':
                     width = height = 800;
                     break;
-                case 'a5':
+                case 'a5p':
                     width = 595;
                     height = 842;
                     break;
-                case 'a4':
+                case 'a5l':
+                    width = 842;
+                    height = 595;
+                    break;
+                case 'a4p':
                     width = 842;
                     height = 1191;
+                    break;
+                case 'a4l':
+                    width = 1191;
+                    height = 842;
                     break;
             }
 
