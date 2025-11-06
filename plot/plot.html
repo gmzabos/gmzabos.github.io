@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotter Pattern Generator</title>
+    <style>
+        :root {
+            --color-background: #fcfcf9;
+            --color-surface: #fffefd;
+            --color-text: #133441;
+            --color-text-secondary: #62686d;
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-secondary: rgba(94, 82, 64, 0.12);
+            --color-secondary-hover: rgba(94, 82, 64, 0.2);
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: #1f2121;
+                --color-surface: #262828;
+                --color-text: #f5f5f5;
+                --color-text-secondary: rgba(167, 169, 169, 0.7);
+                --color-primary: #32b8c6;
+                --color-primary-hover: #2da6b2;
+                --color-border: rgba(119, 124, 124, 0.3);
+                --color-secondary: rgba(119, 124, 124, 0.15);
+                --color-secondary-hover: rgba(119, 124, 124, 0.25);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-24);
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: var(--space-24);
+            letter-spacing: -0.01em;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: var(--space-24);
+        }
+
+        .controls {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: var(--space-24);
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 12px;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            color: var(--color-text);
+            font-size: 14px;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 32px;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            padding: 4px;
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+        }
+
+        .range-value {
+            display: inline-block;
+            min-width: 40px;
+            text-align: right;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-left: var(--space-8);
+        }
+
+        .btn {
+            width: 100%;
+            padding: var(--space-12) var(--space-16);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: var(--space-8);
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .canvas-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 600px;
+        }
+
+        #canvas {
+            border: 1px solid var(--color-border);
+            background: white;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .info {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-8);
+        }
+
+        @media (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pattern Generator</h1>
+        
+        <div class="layout">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Mustertyp</label>
+                    <select id="patternType">
+                        <option value="perlinLines">Perlin Noise lines</option>
+                        <option value="circles">Circles</option>
+                        <option value="waves">Organic waves</option>
+                        <option value="grid">Noisy raster</option>
+                        <option value="spiral">Spirals</option>
+                        <option value="voronoi">Voronoi pattern</option>
+                        <option value="flow">Flow field</option>
+                        <option value="kmeans">K-Means cluster</option>
+                        <option value="dbscan">DBSCAN cluster</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Format</label>
+                    <select id="format">
+                        <option value="square">Square (800×800)</option>
+                        <option value="a5">DIN A5 (595×842)</option>
+                        <option value="a4">DIN A4 (842×1191)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Complexity <span class="range-value" id="complexityValue">50</span></label>
+                    <input type="range" id="complexity" min="10" max="200" value="50">
+                </div>
+
+                <div class="control-group">
+                    <label>Density <span class="range-value" id="densityValue">1.0</span></label>
+                    <input type="range" id="density" min="0.1" max="3" step="0.1" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label>Variation <span class="range-value" id="variationValue">0.5</span></label>
+                    <input type="range" id="variation" min="0" max="1" step="0.05" value="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Seed (for replay)</label>
+                    <input type="number" id="seed" value="12345">
+                </div>
+
+                <div class="control-group">
+                    <label>Layer</label>
+                    <select id="currentLayer">
+                        <option value="0">Layer 1</option>
+                        <option value="1">Layer 2</option>
+                        <option value="2">Layer 3</option>
+                        <option value="3">Layer 4</option>
+                    </select>
+                    <div class="info" style="margin-top: 8px;">
+                        Choose a layer to overlay patterns
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Layer colors</label>
+                    <input type="color" id="layerColor" value="#000000">
+                </div>
+
+                <button class="btn" id="generate">Add pattern to layer</button>
+                <button class="btn btn-secondary" id="clearLayer">Clear current layer</button>
+                <button class="btn btn-secondary" id="clearAll">Clear all layers</button>
+                <button class="btn btn-secondary" id="randomize">Random values</button>
+                <button class="btn btn-secondary" id="download">Download SVG</button>
+
+                <div class="info">
+                    💡 SVG-Dateien are compatible to NextDraw & AxiDraw
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="canvas" width="800" height="800"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Layer management
+        const layers = [[], [], [], []]; // 4 layers for different patterns
+        const layerColors = ['#000000', '#0066cc', '#cc0000', '#009900'];
+
+        // Perlin Noise Implementation
+        class PerlinNoise {
+            constructor(seed = 0) {
+                this.gradients = {};
+                this.memory = {};
+                this.seed = seed;
+            }
+
+            rand(x, y) {
+                const angle = (Math.sin(x * 12.9898 + y * 78.233 + this.seed) * 43758.5453) % (2 * Math.PI);
+                return { x: Math.cos(angle), y: Math.sin(angle) };
+            }
+
+            dot(g, x, y) {
+                return g.x * x + g.y * y;
+            }
+
+            smootherstep(t) {
+                return t * t * t * (t * (t * 6 - 15) + 10);
+            }
+
+            noise(x, y) {
+                const xi = Math.floor(x);
+                const yi = Math.floor(y);
+                const xf = x - xi;
+                const yf = y - yi;
+
+                const key = `${xi},${yi}`;
+                if (this.memory[key] !== undefined) {
+                    return this.memory[key];
+                }
+
+                const g00 = this.rand(xi, yi);
+                const g10 = this.rand(xi + 1, yi);
+                const g01 = this.rand(xi, yi + 1);
+                const g11 = this.rand(xi + 1, yi + 1);
+
+                const d00 = this.dot(g00, xf, yf);
+                const d10 = this.dot(g10, xf - 1, yf);
+                const d01 = this.dot(g01, xf, yf - 1);
+                const d11 = this.dot(g11, xf - 1, yf - 1);
+
+                const u = this.smootherstep(xf);
+                const v = this.smootherstep(yf);
+
+                const x1 = d00 + u * (d10 - d00);
+                const x2 = d01 + u * (d11 - d01);
+                const result = x1 + v * (x2 - x1);
+
+                this.memory[key] = result;
+                return result;
+            }
+        }
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let currentSVG = '';
+
+        function seededRandom(seed) {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        function generatePerlinLines(params) {
+            const { complexity, density, variation, seed } = params;
+            const perlin = new PerlinNoise(seed);
+            const paths = [];
+            const lines = Math.floor(complexity * density);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < lines; i++) {
+                const y = (i / lines) * canvas.height;
+                const path = [`M 0 ${y}`];
+                
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+
+                for (let x = 0; x <= canvas.width; x += 5) {
+                    const noise = perlin.noise(x * 0.01 * variation, i * 0.1);
+                    const offsetY = noise * 50 * variation;
+                    const finalY = y + offsetY;
+                    
+                    ctx.lineTo(x, finalY);
+                    path.push(`L ${x} ${finalY}`);
+                }
+
+                ctx.stroke();
+                paths.push(path.join(' '));
+            }
+
+            return paths;
+        }
+
+        function generateCircles(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const circles = [];
+            const maxAttempts = complexity * 100;
+            const minRadius = 5;
+            const maxRadius = 50 * variation;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let attempt = 0; attempt < maxAttempts && circles.length < complexity; attempt++) {
+                const x = seededRandom(seed + attempt * 2) * canvas.width;
+                const y = seededRandom(seed + attempt * 2 + 1) * canvas.height;
+                const radius = minRadius + seededRandom(seed + attempt * 3) * (maxRadius - minRadius);
+
+                let valid = true;
+                for (const circle of circles) {
+                    const dx = x - circle.x;
+                    const dy = y - circle.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < radius + circle.r + 5 / density) {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                if (valid) {
+                    circles.push({ x, y, r: radius });
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    paths.push(`M ${x + radius} ${y} A ${radius} ${radius} 0 1 1 ${x - radius} ${y} A ${radius} ${radius} 0 1 1 ${x + radius} ${y}`);
+                }
+            }
+
+            return paths;
+        }
+
+        function generateWaves(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const waves = Math.floor(complexity * 0.5 * density);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < waves; i++) {
+                const y = (i / waves) * canvas.height;
+                const amplitude = 30 + seededRandom(seed + i) * 50 * variation;
+                const frequency = 0.01 + seededRandom(seed + i + 100) * 0.02 * variation;
+                const path = [`M 0 ${y}`];
+
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+
+                for (let x = 0; x <= canvas.width; x += 3) {
+                    const waveY = y + Math.sin(x * frequency + i) * amplitude;
+                    ctx.lineTo(x, waveY);
+                    path.push(`L ${x} ${waveY}`);
+                }
+
+                ctx.stroke();
+                paths.push(path.join(' '));
+            }
+
+            return paths;
+        }
+
+        function generateGrid(params) {
+            const { complexity, density, variation, seed } = params;
+            const perlin = new PerlinNoise(seed);
+            const paths = [];
+            const gridSize = Math.max(10, 100 - complexity);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < canvas.width; x += gridSize / density) {
+                for (let y = 0; y < canvas.height; y += gridSize / density) {
+                    const noise = perlin.noise(x * 0.01, y * 0.01);
+                    const offsetX = noise * 20 * variation;
+                    const offsetY = perlin.noise(x * 0.01 + 100, y * 0.01 + 100) * 20 * variation;
+                    
+                    const size = 5 + Math.abs(noise) * 10;
+                    const finalX = x + offsetX;
+                    const finalY = y + offsetY;
+
+                    ctx.beginPath();
+                    ctx.arc(finalX, finalY, size * variation, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    paths.push(`M ${finalX + size * variation} ${finalY} A ${size * variation} ${size * variation} 0 1 1 ${finalX - size * variation} ${finalY} A ${size * variation} ${size * variation} 0 1 1 ${finalX + size * variation} ${finalY}`);
+                }
+            }
+
+            return paths;
+        }
+
+        function generateSpiral(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const spirals = Math.floor(5 + complexity * 0.1 * density);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let s = 0; s < spirals; s++) {
+                const centerX = seededRandom(seed + s * 2) * canvas.width;
+                const centerY = seededRandom(seed + s * 2 + 1) * canvas.height;
+                const maxRadius = 50 + seededRandom(seed + s * 3) * 100 * variation;
+                const turns = 2 + variation * 3;
+                const path = [];
+
+                ctx.beginPath();
+
+                for (let angle = 0; angle < Math.PI * 2 * turns; angle += 0.1) {
+                    const radius = (angle / (Math.PI * 2 * turns)) * maxRadius;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    if (angle === 0) {
+                        ctx.moveTo(x, y);
+                        path.push(`M ${x} ${y}`);
+                    } else {
+                        ctx.lineTo(x, y);
+                        path.push(`L ${x} ${y}`);
+                    }
+                }
+
+                ctx.stroke();
+                paths.push(path.join(' '));
+            }
+
+            return paths;
+        }
+
+        function generateVoronoi(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const points = [];
+            const numPoints = Math.floor(complexity * 0.5 * density);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < numPoints; i++) {
+                points.push({
+                    x: seededRandom(seed + i * 2) * canvas.width,
+                    y: seededRandom(seed + i * 2 + 1) * canvas.height
+                });
+            }
+
+            const gridSize = 5;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                for (let y = 0; y < canvas.height; y += gridSize) {
+                    let minDist = Infinity;
+                    let closestPoint = null;
+
+                    for (const point of points) {
+                        const dx = x - point.x;
+                        const dy = y - point.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestPoint = point;
+                        }
+                    }
+
+                    if (minDist < 100 * variation) {
+                        ctx.fillStyle = '#000';
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+            }
+
+            for (const point of points) {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                paths.push(`M ${point.x + 3} ${point.y} A 3 3 0 1 1 ${point.x - 3} ${point.y} A 3 3 0 1 1 ${point.x + 3} ${point.y}`);
+            }
+
+            return paths;
+        }
+
+        function generateFlowField(params) {
+            const { complexity, density, variation, seed } = params;
+            const perlin = new PerlinNoise(seed);
+            const paths = [];
+            const numParticles = Math.floor(complexity * 2 * density);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 0.5;
+
+            for (let p = 0; p < numParticles; p++) {
+                let x = seededRandom(seed + p * 2) * canvas.width;
+                let y = seededRandom(seed + p * 2 + 1) * canvas.height;
+                const path = [`M ${x} ${y}`];
+
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+
+                for (let step = 0; step < 100; step++) {
+                    const angle = perlin.noise(x * 0.01 * variation, y * 0.01 * variation) * Math.PI * 4;
+                    const stepSize = 2;
+                    
+                    x += Math.cos(angle) * stepSize;
+                    y += Math.sin(angle) * stepSize;
+
+                    if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) break;
+
+                    ctx.lineTo(x, y);
+                    path.push(`L ${x} ${y}`);
+                }
+
+                ctx.stroke();
+                paths.push(path.join(' '));
+            }
+
+            return paths;
+        }
+
+        function generateKMeans(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const numPoints = Math.floor(complexity * density);
+            const k = Math.max(3, Math.floor(5 + variation * 10));
+            const points = [];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            // Generate random points
+            for (let i = 0; i < numPoints; i++) {
+                points.push({
+                    x: seededRandom(seed + i * 2) * canvas.width,
+                    y: seededRandom(seed + i * 2 + 1) * canvas.height,
+                    cluster: 0
+                });
+            }
+
+            // Initialize centroids randomly
+            const centroids = [];
+            for (let i = 0; i < k; i++) {
+                centroids.push({
+                    x: seededRandom(seed + 10000 + i * 2) * canvas.width,
+                    y: seededRandom(seed + 10000 + i * 2 + 1) * canvas.height
+                });
+            }
+
+            // K-means iterations
+            for (let iter = 0; iter < 20; iter++) {
+                // Assign points to nearest centroid
+                for (const point of points) {
+                    let minDist = Infinity;
+                    let closestCluster = 0;
+                    
+                    for (let c = 0; c < k; c++) {
+                        const dx = point.x - centroids[c].x;
+                        const dy = point.y - centroids[c].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestCluster = c;
+                        }
+                    }
+                    
+                    point.cluster = closestCluster;
+                }
+
+                // Update centroids
+                for (let c = 0; c < k; c++) {
+                    const clusterPoints = points.filter(p => p.cluster === c);
+                    if (clusterPoints.length > 0) {
+                        const sumX = clusterPoints.reduce((sum, p) => sum + p.x, 0);
+                        const sumY = clusterPoints.reduce((sum, p) => sum + p.y, 0);
+                        centroids[c].x = sumX / clusterPoints.length;
+                        centroids[c].y = sumY / clusterPoints.length;
+                    }
+                }
+            }
+
+            // Draw clusters
+            for (let c = 0; c < k; c++) {
+                const clusterPoints = points.filter(p => p.cluster === c);
+                
+                if (clusterPoints.length > 2) {
+                    // Convex hull approximation (simplified)
+                    const sorted = clusterPoints.sort((a, b) => {
+                        const angleA = Math.atan2(a.y - centroids[c].y, a.x - centroids[c].x);
+                        const angleB = Math.atan2(b.y - centroids[c].y, b.x - centroids[c].x);
+                        return angleA - angleB;
+                    });
+
+                    const path = [`M ${sorted[0].x} ${sorted[0].y}`];
+                    ctx.beginPath();
+                    ctx.moveTo(sorted[0].x, sorted[0].y);
+
+                    for (let i = 1; i < sorted.length; i++) {
+                        ctx.lineTo(sorted[i].x, sorted[i].y);
+                        path.push(`L ${sorted[i].x} ${sorted[i].y}`);
+                    }
+
+                    ctx.closePath();
+                    ctx.stroke();
+                    path.push('Z');
+                    paths.push(path.join(' '));
+                }
+
+                // Draw centroid
+                ctx.beginPath();
+                ctx.arc(centroids[c].x, centroids[c].y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                paths.push(`M ${centroids[c].x + 5} ${centroids[c].y} A 5 5 0 1 1 ${centroids[c].x - 5} ${centroids[c].y} A 5 5 0 1 1 ${centroids[c].x + 5} ${centroids[c].y}`);
+
+                // Connect cluster points to centroid
+                for (const point of clusterPoints) {
+                    if (seededRandom(seed + point.x + point.y) < 0.3 * density) {
+                        ctx.beginPath();
+                        ctx.moveTo(point.x, point.y);
+                        ctx.lineTo(centroids[c].x, centroids[c].y);
+                        ctx.stroke();
+                        paths.push(`M ${point.x} ${point.y} L ${centroids[c].x} ${centroids[c].y}`);
+                    }
+                }
+            }
+
+            return paths;
+        }
+
+        function generateDBSCAN(params) {
+            const { complexity, density, variation, seed } = params;
+            const paths = [];
+            const numPoints = Math.floor(complexity * density);
+            const eps = 30 + variation * 50;
+            const minPts = Math.max(3, Math.floor(5 * density));
+            const points = [];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+
+            // Generate random points
+            for (let i = 0; i < numPoints; i++) {
+                points.push({
+                    x: seededRandom(seed + i * 2) * canvas.width,
+                    y: seededRandom(seed + i * 2 + 1) * canvas.height,
+                    cluster: -1,
+                    visited: false
+                });
+            }
+
+            function rangeQuery(point, eps) {
+                const neighbors = [];
+                for (const p of points) {
+                    const dx = point.x - p.x;
+                    const dy = point.y - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist <= eps) {
+                        neighbors.push(p);
+                    }
+                }
+                return neighbors;
+            }
+
+            let clusterID = 0;
+
+            for (const point of points) {
+                if (point.visited) continue;
+                point.visited = true;
+
+                const neighbors = rangeQuery(point, eps);
+
+                if (neighbors.length < minPts) {
+                    point.cluster = -1; // Noise
+                } else {
+                    point.cluster = clusterID;
+                    const queue = [...neighbors];
+
+                    while (queue.length > 0) {
+                        const q = queue.shift();
+                        if (!q.visited) {
+                            q.visited = true;
+                            const qNeighbors = rangeQuery(q, eps);
+                            if (qNeighbors.length >= minPts) {
+                                queue.push(...qNeighbors);
+                            }
+                        }
+                        if (q.cluster === -1) {
+                            q.cluster = clusterID;
+                        }
+                    }
+                    clusterID++;
+                }
+            }
+
+            // Draw clusters
+            const clusters = {};
+            for (const point of points) {
+                if (point.cluster >= 0) {
+                    if (!clusters[point.cluster]) {
+                        clusters[point.cluster] = [];
+                    }
+                    clusters[point.cluster].push(point);
+                }
+            }
+
+            for (const clusterId in clusters) {
+                const clusterPoints = clusters[clusterId];
+                
+                // Draw convex hull
+                if (clusterPoints.length > 2) {
+                    const centroid = {
+                        x: clusterPoints.reduce((sum, p) => sum + p.x, 0) / clusterPoints.length,
+                        y: clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length
+                    };
+
+                    const sorted = clusterPoints.sort((a, b) => {
+                        const angleA = Math.atan2(a.y - centroid.y, a.x - centroid.x);
+                        const angleB = Math.atan2(b.y - centroid.y, b.x - centroid.x);
+                        return angleA - angleB;
+                    });
+
+                    const path = [`M ${sorted[0].x} ${sorted[0].y}`];
+                    ctx.beginPath();
+                    ctx.moveTo(sorted[0].x, sorted[0].y);
+
+                    for (let i = 1; i < sorted.length; i++) {
+                        ctx.lineTo(sorted[i].x, sorted[i].y);
+                        path.push(`L ${sorted[i].x} ${sorted[i].y}`);
+                    }
+
+                    ctx.closePath();
+                    ctx.stroke();
+                    path.push('Z');
+                    paths.push(path.join(' '));
+                }
+
+                // Draw points
+                for (const point of clusterPoints) {
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Draw noise points
+            ctx.fillStyle = '#888';
+            for (const point of points) {
+                if (point.cluster === -1) {
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            return paths;
+        }
+
+        function updateCanvasSize() {
+            const format = document.getElementById('format').value;
+            let width, height;
+
+            switch(format) {
+                case 'square':
+                    width = height = 800;
+                    break;
+                case 'a5':
+                    width = 595;
+                    height = 842;
+                    break;
+                case 'a4':
+                    width = 842;
+                    height = 1191;
+                    break;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        function generatePattern() {
+            updateCanvasSize();
+            
+            const patternType = document.getElementById('patternType').value;
+            const complexity = parseInt(document.getElementById('complexity').value);
+            const density = parseFloat(document.getElementById('density').value);
+            const variation = parseFloat(document.getElementById('variation').value);
+            const seed = parseInt(document.getElementById('seed').value);
+            const currentLayer = parseInt(document.getElementById('currentLayer').value);
+
+            const params = { complexity, density, variation, seed };
+            let paths = [];
+
+            switch(patternType) {
+                case 'perlinLines': paths = generatePerlinLines(params); break;
+                case 'circles': paths = generateCircles(params); break;
+                case 'waves': paths = generateWaves(params); break;
+                case 'grid': paths = generateGrid(params); break;
+                case 'spiral': paths = generateSpiral(params); break;
+                case 'voronoi': paths = generateVoronoi(params); break;
+                case 'flow': paths = generateFlowField(params); break;
+                case 'kmeans': paths = generateKMeans(params); break;
+                case 'dbscan': paths = generateDBSCAN(params); break;
+            }
+
+            // Add paths to selected layer
+            layers[currentLayer] = paths;
+
+            // Redraw all layers
+            redrawAllLayers();
+            
+            currentSVG = generateSVG();
+        }
+
+        function redrawAllLayers() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < layers.length; i++) {
+                ctx.strokeStyle = layerColors[i];
+                ctx.lineWidth = 1;
+                
+                for (const pathStr of layers[i]) {
+                    drawPathOnCanvas(pathStr);
+                }
+            }
+        }
+
+        function drawPathOnCanvas(pathStr) {
+            const commands = pathStr.match(/[MLAZ][^MLAZ]*/g);
+            if (!commands) return;
+
+            ctx.beginPath();
+
+            for (const cmd of commands) {
+                const type = cmd[0];
+                const coords = cmd.slice(1).trim().split(/[\s,]+/).map(Number);
+
+                switch(type) {
+                    case 'M':
+                        ctx.moveTo(coords[0], coords[1]);
+                        break;
+                    case 'L':
+                        ctx.lineTo(coords[0], coords[1]);
+                        break;
+                    case 'A':
+                        // Simplified arc drawing
+                        if (coords.length >= 7) {
+                            ctx.arc(coords[5], coords[6], coords[0], 0, Math.PI * 2);
+                        }
+                        break;
+                    case 'Z':
+                        ctx.closePath();
+                        break;
+                }
+            }
+
+            ctx.stroke();
+        }
+
+        function clearCurrentLayer() {
+            const currentLayer = parseInt(document.getElementById('currentLayer').value);
+            layers[currentLayer] = [];
+            redrawAllLayers();
+            currentSVG = generateSVG();
+        }
+
+        function clearAllLayers() {
+            for (let i = 0; i < layers.length; i++) {
+                layers[i] = [];
+            }
+            redrawAllLayers();
+            currentSVG = '';
+        }
+
+        function generateSVG() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            let svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n`;
+            svg += `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">\n`;
+            
+            // Create a group for each layer
+            for (let i = 0; i < layers.length; i++) {
+                if (layers[i].length > 0) {
+                    svg += `  <g id="layer${i + 1}" fill="none" stroke="${layerColors[i]}" stroke-width="1">\n`;
+                    
+                    for (const path of layers[i]) {
+                        svg += `    <path d="${path}" />\n`;
+                    }
+                    
+                    svg += `  </g>\n`;
+                }
+            }
+            
+            svg += `</svg>`;
+            return svg;
+        }
+
+        function downloadSVG() {
+            if (!currentSVG) {
+                alert('Bitte generiere erst ein Muster!');
+                return;
+            }
+
+            const blob = new Blob([currentSVG], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `plotter-pattern-${Date.now()}.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function randomizeParameters() {
+            document.getElementById('complexity').value = Math.floor(Math.random() * 190) + 10;
+            document.getElementById('density').value = (Math.random() * 2.9 + 0.1).toFixed(1);
+            document.getElementById('variation').value = Math.random().toFixed(2);
+            document.getElementById('seed').value = Math.floor(Math.random() * 100000);
+            updateRangeValues();
+            generatePattern();
+        }
+
+        function updateRangeValues() {
+            document.getElementById('complexityValue').textContent = document.getElementById('complexity').value;
+            document.getElementById('densityValue').textContent = document.getElementById('density').value;
+            document.getElementById('variationValue').textContent = document.getElementById('variation').value;
+        }
+
+        document.getElementById('complexity').addEventListener('input', updateRangeValues);
+        document.getElementById('density').addEventListener('input', updateRangeValues);
+        document.getElementById('variation').addEventListener('input', updateRangeValues);
+        document.getElementById('generate').addEventListener('click', generatePattern);
+        document.getElementById('randomize').addEventListener('click', randomizeParameters);
+        document.getElementById('download').addEventListener('click', downloadSVG);
+        document.getElementById('clearLayer').addEventListener('click', clearCurrentLayer);
+        document.getElementById('clearAll').addEventListener('click', clearAllLayers);
+        document.getElementById('patternType').addEventListener('change', generatePattern);
+        document.getElementById('format').addEventListener('change', generatePattern);
+        document.getElementById('currentLayer').addEventListener('change', () => {
+            updateLayerColorPicker();
+            redrawAllLayers();
+        });
+
+        document.getElementById('layerColor').addEventListener('input', (e) => {
+            const currentLayer = parseInt(document.getElementById('currentLayer').value);
+            layerColors[currentLayer] = e.target.value;
+            redrawAllLayers();
+            currentSVG = generateSVG();
+        });
+
+        function updateLayerColorPicker() {
+            const currentLayer = parseInt(document.getElementById('currentLayer').value);
+            document.getElementById('layerColor').value = layerColors[currentLayer];
+        }
+
+        // Initialize color picker with first layer color
+        updateLayerColorPicker();
+
+        // Initialize with empty layers
+        redrawAllLayers();
+    </script>
+</body>
+</html>
